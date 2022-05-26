@@ -1,1 +1,302 @@
 
+<!DOCTYPE html>
+<html>
+  <html lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.css"></script>
+   <style>
+     html,
+body {
+  font: 11pt arial;
+  background-image: url(https://dm0qx8t0i9gc9.cloudfront.net/thumbnails/video/MPaEbz-/videoblocks-3d-motion-graphics-background-with-digitally-animated-financial-line-graphs-running-through-virtual-space-with-holographic-rates-and-stock-market-board_rrmqee0uen_thumbnail-1080_01.png);
+}
+
+h1 {
+  font-size: 150%;
+  margin: 5px 0;
+  color: #9aded6;
+}
+
+h2 {
+  font-size: 100%;
+  margin: 5px 0;
+  color: #9aded6;
+}
+
+table.view {
+  width: 100%;
+  background-color: #9aded6;
+  border: 1px solid #9aded6;
+  opacity: 0.8;
+}
+
+table td {
+  vertical-align: top;
+}
+
+table table {
+  background-color: #9aded6;;
+  border: 1px solid #9aded6;;
+  
+}
+
+table table td {
+  vertical-align: middle;
+}
+
+input[type="text"],
+pre {
+  border: 1px solid aqua;
+  opacity: 1;
+  
+}
+
+pre {
+  background-color: aqua;
+  margin: 0;
+  padding: 5px;
+  font-size: 10pt;
+  opacity: 1;
+}
+
+#retea {
+  width: 100%;
+  height: 400px;
+  border: 1px solid aquamarine;
+  opacity: 1;
+}
+
+   </style>
+  </head>
+  <body class="im">
+    <h1>Editare</h1>
+    <table>
+      <tbody>
+        <tr>
+          <td>
+            <h2>Nod</h2>
+            <table>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td><label for="node-id">Cheie</label></td>
+                  <td><input id="node-id" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><label for="node-label">Valoare</label></td>
+                  <td><input id="node-label" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>Actiune</td>
+                  <td>
+                    <button id="node-add" onclick="addNode();">Adauga</button>
+                    <button id="node-update" onclick="updateNode();">Modifica</button>
+                    <button id="node-remove" onclick="removeNode();">Sterge</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+          <td>
+            <h2>Muchie</h2>
+            <table>
+              <tbody>
+                <tr>
+                  <td></td>
+                  <td><label for="edge-id">Cheie</label></td>
+                  <td><input id="edge-id" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><label for="edge-label">Valoare</label></td>
+                  <td><input id="edge-label" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><label for="edge-from">De la</label></td>
+                  <td><input id="edge-from" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td><label for="edge-to">Pana la</label></td>
+                  <td><input id="edge-to" type="text" value="" /></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>Actiune</td>
+                  <td>
+                    <button id="edge-add" onclick="addEdge();">Adauga</button>
+                    <button id="edge-update" onclick="updateEdge();">Modifica</button>
+                    <button id="edge-remove" onclick="removeEdge();">Sterge</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h1>Vizualizare date</h1>
+    <table class="view">
+      <colgroup>
+        <col width="60%" />
+        <col width="20%" />
+        <col width="20%" />
+      </colgroup>
+      <tbody>
+        <tr>
+
+          <td>
+            <h2>Retea</h2>
+    
+            <div id="retea"></div>
+          </td>
+
+          <td>
+            <h2>Noduri</h2>
+            <pre id="noduri"></pre>
+          </td>
+    
+          <td>
+            <h2>Muchii</h2>
+            <pre id="muchii"></pre>
+          </td>
+    
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
+
+<script >
+  var nodes, edges, network;
+
+    // convenience method to stringify a JSON object
+    function toJSON(obj) {
+      return JSON.stringify(obj, null, 4);
+    }
+    
+    function addNode() {
+      try {
+        nodes.add({
+          id: document.getElementById("node-id").value,
+          label: document.getElementById("node-label").value
+        });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("node-id").value = "",
+      document.getElementById("node-label").value = ""
+    }
+    
+    function updateNode() {
+      try {
+        nodes.update({
+          id: document.getElementById("node-id").value,
+          label: document.getElementById("node-label").value
+        });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("node-id").value = "",
+      document.getElementById("node-label").value = ""
+    }
+    function removeNode() {
+      try {
+        nodes.remove({ id: document.getElementById("node-id").value });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("node-id").value = "",
+      document.getElementById("node-label").value = ""
+    }
+    
+    function addEdge() {
+      try {
+        edges.add({
+          id: document.getElementById("edge-id").value,
+          label: document.getElementById("edge-label").value,
+          from: document.getElementById("edge-from").value,
+          to: document.getElementById("edge-to").value
+        });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("edge-id").value = "",
+      document.getElementById("edge-label").value = "",
+      document.getElementById("edge-from").value = "",
+      document.getElementById("edge-to").value = ""
+    }
+    function updateEdge() {
+      try {
+        edges.update({
+          id: document.getElementById("edge-id").value,
+          label: document.getElementById("edge-label").value,
+          from: document.getElementById("edge-from").value,
+          to: document.getElementById("edge-to").value
+        });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("edge-id").value = "",
+      document.getElementById("edge-label").value = "",
+      document.getElementById("edge-from").value = "",
+      document.getElementById("edge-to").value = ""
+    }
+    function removeEdge() {
+      try {
+        edges.remove({ id: document.getElementById("edge-id").value });
+      } catch (err) {
+        alert(err);
+      }
+      document.getElementById("edge-id").value = "",
+      document.getElementById("edge-label").value = "",
+      document.getElementById("edge-from").value = "",
+      document.getElementById("edge-to").value = ""
+    }
+    
+    function draw() {
+      // se creaza nodurile
+      nodes = new vis.DataSet();
+      nodes.on("*", function () {
+        document.getElementById("noduri").innerText = JSON.stringify(
+          nodes.get(),
+          null,
+          4
+        );
+      });
+     
+    
+      // se adauga muchiile intre noduri
+      edges = new vis.DataSet();
+      edges.on("*", function () {
+        document.getElementById("muchii").innerText = JSON.stringify(
+          edges.get(),
+          null,
+          4
+        );
+      });
+     
+    
+      // se creaza reteaua
+      var container = document.getElementById("retea");
+      var data = {
+        nodes: nodes,
+        edges: edges
+      };
+      var options = {};
+      network = new vis.Network(container, data, options);
+    }
+    
+    window.addEventListener("load", () => {
+      draw();
+    });
+    </script>
